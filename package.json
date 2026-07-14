@@ -1,0 +1,24 @@
+{
+  "name": "hn-developer-sentiment-mcp",
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=20.0.0" },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "start": "tsx src/main.ts",
+    "start:prod": "node dist/main.js",
+    "lint:types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "apify": "^3.7.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}
