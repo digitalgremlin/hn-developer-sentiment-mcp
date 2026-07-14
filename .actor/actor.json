@@ -1,9 +1,9 @@
 {
 	"$schema": "https://apify.com/schemas/v1/actor.ide.json",
 	"actorSpecification": 1,
-	"name": "reddit-developer-sentiment-mcp",
-	"title": "Reddit Developer Sentiment—What Devs Really Think (MCP Server)",
-	"description": "Deterministic developer-Reddit sentiment for any brand, tool, or library—sentiment, mention volume, themes, and feature requests across public developer subreddits, via 4 agent-callable MCP tools.",
+	"name": "hn-developer-sentiment-mcp",
+	"title": "Hacker News Developer Sentiment—What Devs Really Think (MCP Server)",
+	"description": "Deterministic developer sentiment for any brand, tool, or library from Hacker News—sentiment, mention volume, themes, and feature requests across HN stories and comments, via 4 agent-callable MCP tools. Zero setup: no API key required.",
 	"version": "0.1",
 	"buildTag": "latest",
 	"usesStandbyMode": true,
@@ -12,39 +12,23 @@
 		"generatedBy": "Claude Code with Claude Opus 4.8"
 	},
 	"input": {
-		"title": "Reddit Developer Sentiment (MCP) input",
-		"description": "Optional Standby configuration. All fields are optional so the Actor boots with no input — but Reddit API credentials are effectively required to return data rather than credential errors.",
+		"title": "Hacker News Developer Sentiment (MCP) input",
+		"description": "Optional Standby configuration. All fields are optional and the Actor boots AND returns data with no input — the Hacker News (Algolia) API needs no credentials.",
 		"type": "object",
 		"schemaVersion": 1,
 		"properties": {
-			"redditClientId": {
-				"title": "Reddit Client ID (required in practice)",
-				"type": "string",
-				"editor": "textfield",
-				"isSecret": true,
-				"description": "Client ID of a Reddit 'script'/installed app (application-only OAuth). Create one at https://www.reddit.com/prefs/apps — the ID is the short string shown under the app name. Reddit's API rejects unauthenticated requests, so without credentials the tools return a credential error rather than data. Recommended for Standby: also set REDDIT_CLIENT_ID/REDDIT_CLIENT_SECRET environment variables so they persist across restarts.",
-				"prefill": ""
-			},
-			"redditClientSecret": {
-				"title": "Reddit Client Secret (required in practice)",
-				"type": "string",
-				"editor": "textfield",
-				"isSecret": true,
-				"description": "Secret of the Reddit app paired with the Client ID above. Found on the same https://www.reddit.com/prefs/apps page. Stored encrypted; never logged or returned by the Actor.",
-				"prefill": ""
-			},
-			"defaultSubreddits": {
-				"title": "Default subreddits",
+			"defaultChannels": {
+				"title": "Default HN channels",
 				"type": "array",
 				"editor": "stringList",
-				"description": "Developer subreddits searched when a tool call does not specify its own. Names are normalized (an 'r/' prefix is stripped and they are lowercased). 1–25 entries.",
-				"default": ["programming", "webdev", "devops", "machinelearning"],
-				"prefill": ["programming", "webdev", "devops", "machinelearning"]
+				"description": "Hacker News post types searched when a tool call does not specify its own. Allowed values: story, ask_hn, show_hn, comment. Defaults to all four (stories + comments — HN opinion lives in comments).",
+				"default": ["story", "ask_hn", "show_hn", "comment"],
+				"prefill": ["story", "ask_hn", "show_hn", "comment"]
 			},
 			"windowDays": {
 				"title": "Default window (days)",
 				"type": "integer",
-				"description": "Trailing look-back window (1–90 days) over which mentions are read, when a tool call does not specify its own. Maps to Reddit's day/week/month/year time buckets, then filtered to the exact day count.",
+				"description": "Trailing look-back window (1–90 days) over which mentions are read, when a tool call does not specify its own. Applied as an exact created_at filter on the Algolia HN API.",
 				"default": 30,
 				"prefill": 30,
 				"minimum": 1,
@@ -53,7 +37,7 @@
 			"cacheTtlMinutes": {
 				"title": "Cache TTL (minutes)",
 				"type": "integer",
-				"description": "How long a query's fetched Reddit payload is reused before refetching. Lower = fresher reads; higher = fewer Reddit API calls. All query tools share the same cached payload per query.",
+				"description": "How long a query's fetched Hacker News payload is reused before refetching. Lower = fresher reads; higher = fewer API calls. All query tools share the same cached payload per query.",
 				"default": 20,
 				"prefill": 20,
 				"minimum": 1,
@@ -62,7 +46,7 @@
 			"maxItems": {
 				"title": "Max items per request",
 				"type": "integer",
-				"description": "Upper bound on items returned by a single tool call (Reddit caps a listing at 100). Per-call 'limit' arguments are clamped to this value.",
+				"description": "Upper bound on items returned by a single tool call. Per-call 'limit' arguments are clamped to this value.",
 				"default": 100,
 				"prefill": 100,
 				"minimum": 10,
@@ -75,5 +59,5 @@
 	"dockerfile": "../Dockerfile",
 	"webServerMcpPath": "/mcp",
 	"categories": ["AI_GPT_AND_LLMS", "DEVELOPER_TOOLS"],
-	"tags": ["standby", "mcp", "mcp-server", "model-context-protocol", "reddit", "sentiment-analysis", "developer-tools", "ai-agent"]
+	"tags": ["standby", "mcp", "mcp-server", "model-context-protocol", "hackernews", "hacker-news", "sentiment-analysis", "developer-tools", "ai-agent"]
 }

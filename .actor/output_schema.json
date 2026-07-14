@@ -1,6 +1,6 @@
 {
   "actorOutputSchemaVersion": 1,
-  "title": "Reddit Developer Sentiment (MCP) output",
+  "title": "Hacker News Developer Sentiment (MCP) output",
   "description": "This Actor runs as a Standby MCP server. It produces no run dataset or key-value store output — AI agents interact with it over the MCP protocol at the /mcp endpoint via its 4 agent-callable tools. An empty output schema signals that a run completed successfully with no stored output, rather than appearing to have failed.",
   "type": "object",
   "properties": {}

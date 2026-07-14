@@ -21,6 +21,24 @@ export function channelTags(channels: HnChannel[]): string {
   return channels.length === 1 ? channels[0] : `(${channels.join(",")})`;
 }
 
+// HN Algolia text is HTML-ish: <p>/<a>/<i>/<pre> tags and hex/decimal entities
+// (&#x2F; &#x27; &gt; ...). Reddit selftext was plain, so the engine assumed clean
+// prose; strip tags + decode entities here so themes/sentiment see real words.
+export function decodeHnText(s: string): string {
+  return s
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&gt;/gi, ">")
+    .replace(/&lt;/gi, "<")
+    .replace(/&amp;/gi, "&")
+    .replace(/https?:\/\/\S+/g, " ") // after entity decode: HN encodes URL slashes as &#x2F;
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function deriveChannel(tags: unknown): string {
   const t = Array.isArray(tags) ? tags : [];
   if (t.includes("ask_hn")) return "ask_hn";
@@ -35,8 +53,8 @@ export function normalizeHits(json: unknown): RawPost[] {
   const hits = (json as { hits?: unknown[] } | null)?.hits ?? [];
   return (hits as Record<string, unknown>[]).map((h) => ({
     id: String(h.objectID),
-    title: (h.title as string) ?? "",
-    selftext: (h.story_text as string) ?? (h.comment_text as string) ?? "",
+    title: decodeHnText((h.title as string) ?? ""),
+    selftext: decodeHnText((h.story_text as string) ?? (h.comment_text as string) ?? ""),
     channel: deriveChannel(h._tags),
     score: (h.points as number) ?? 0,
     numComments: (h.num_comments as number) ?? 0,

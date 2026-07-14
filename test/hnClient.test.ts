@@ -1,6 +1,15 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { normalizeHits, channelTags, HnClient } from "../src/hnClient.js";
+import { normalizeHits, channelTags, HnClient, decodeHnText } from "../src/hnClient.js";
+
+describe("decodeHnText", () => {
+  it("strips HTML tags and decodes hex/named entities", () => {
+    const out = decodeHnText("<p>path&#x2F;to&#x2F;file and &quot;quotes&quot; &amp; tags</p>");
+    expect(out).toBe('path/to/file and "quotes" & tags');
+    expect(out).not.toContain("x2f");
+    expect(out).not.toContain("<");
+  });
+});
 
 describe("channelTags", () => {
   it("passes a single tag bare and OR-groups multiple", () => {
