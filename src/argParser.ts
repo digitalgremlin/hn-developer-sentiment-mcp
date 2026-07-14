@@ -1,27 +1,29 @@
+import type { HnChannel } from "./types.js";
+import { CHANNELS } from "./config.js";
+
 interface ArgConfig {
-  defaultSubreddits: string[];
+  defaultChannels: HnChannel[];
   windowDays: number;
   maxItems: number;
 }
 
 export class ArgError extends Error {}
 
-function normalizeSubreddit(value: string): string {
-  return value.trim().replace(/^\/?r\//i, "").trim().toLowerCase();
-}
-
-function parseSubreddits(args: Record<string, unknown>, cfg: ArgConfig): string[] {
-  const { subreddits } = args;
-  if (subreddits === undefined) return [...cfg.defaultSubreddits];
-  if (!Array.isArray(subreddits) || !subreddits.every((item) => typeof item === "string")) {
-    throw new ArgError("subreddits must be an array of strings");
+function parseChannels(args: Record<string, unknown>, cfg: ArgConfig): HnChannel[] {
+  const { channels } = args;
+  if (channels === undefined) return [...cfg.defaultChannels];
+  if (!Array.isArray(channels) || !channels.every((item) => typeof item === "string")) {
+    throw new ArgError("channels must be an array of strings");
   }
-
-  const normalized = subreddits.map(normalizeSubreddit).filter((item) => item.length > 0);
-  if (normalized.length < 1 || normalized.length > 25) {
-    throw new ArgError("subreddits must include 1 to 25 entries");
+  if (channels.length < 1 || channels.length > 4) {
+    throw new ArgError("channels must include 1 to 4 entries");
   }
-  return normalized;
+  for (const c of channels) {
+    if (!CHANNELS.includes(c as HnChannel)) {
+      throw new ArgError(`invalid channel: ${c} (allowed: ${CHANNELS.join(", ")})`);
+    }
+  }
+  return channels as HnChannel[];
 }
 
 function parseWindowDays(args: Record<string, unknown>, cfg: ArgConfig): number {
@@ -44,7 +46,7 @@ function parseLimit(args: Record<string, unknown>, cfg: ArgConfig): number {
 
 function parseBaseArgs(args: Record<string, unknown>, cfg: ArgConfig) {
   return {
-    subreddits: parseSubreddits(args, cfg),
+    channels: parseChannels(args, cfg),
     windowDays: parseWindowDays(args, cfg),
     limit: parseLimit(args, cfg),
   };

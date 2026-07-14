@@ -8,7 +8,7 @@ export function scorePost(p: RawPost): ScoredPost {
     ...p,
     sentimentScore,
     sentiment: labelFor(sentimentScore),
-    url: `https://www.reddit.com${p.permalink}`,
+    url: `https://news.ycombinator.com${p.permalink}`,
     createdAt: new Date(p.createdUtc * 1000).toISOString(),
   };
 }

@@ -6,7 +6,7 @@ import type { RawPost } from '../types.js';
 
 export function buildSentimentSummary(
   query: string,
-  subreddits: string[],
+  channels: string[],
   windowDays: number,
   posts: RawPost[],
   fetchedAt: string,
@@ -16,7 +16,7 @@ export function buildSentimentSummary(
   const themes = extractThemes(scored.map((s) => s.title + '. ' + s.selftext), query, 8);
   const topSamples = [...scored].sort(byEngagement).slice(0, 3).map((s) => ({
     title: s.title,
-    subreddit: s.subreddit,
+    channel: s.channel,
     score: s.score,
     url: s.url,
     createdAt: s.createdAt,
@@ -25,7 +25,7 @@ export function buildSentimentSummary(
 
   return {
     query,
-    subredditsQueried: subreddits,
+    channelsQueried: channels,
     windowDays,
     mentionVolume: scored.length,
     netSentiment: agg.netSentiment,

@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { buildSearchMentions } from "../src/tools/searchMentions.js";
-import { normalizeListing } from "../src/redditClient.js";
+import { normalizeHits } from "../src/hnClient.js";
 import positive from "./fixtures/positive.json";
 
 describe("buildSearchMentions", () => {
   it("returns scored items ordered by rank with excerpt ≤ 280 chars", () => {
-    const posts = normalizeListing(positive);
+    const posts = normalizeHits(positive);
     const out = buildSearchMentions("react", ["webdev"], 30, 50, posts, "2026-01-01T00:00:00.000Z");
     expect(out.count).toBe(posts.length);
     expect(out.items[0].sentimentScore).toBeTypeOf("number");

@@ -3,7 +3,7 @@ import { byEngagement } from '../ranking.js';
 import type { RawPost } from '../types.js';
 
 export function buildTrending(
-  subreddits: string[],
+  channels: string[],
   windowDays: number,
   limit: number,
   posts: RawPost[],
@@ -14,7 +14,7 @@ export function buildTrending(
     return {
       id: s.id,
       title: s.title,
-      subreddit: s.subreddit,
+      channel: s.channel,
       score: s.score,
       numComments: s.numComments,
       engagement: s.score + s.numComments,
@@ -24,5 +24,5 @@ export function buildTrending(
     };
   });
 
-  return { subredditsQueried: subreddits, windowDays, count: items.length, items, fetchedAt };
+  return { channelsQueried: channels, windowDays, count: items.length, items, fetchedAt };
 }

@@ -4,7 +4,7 @@ import type { RawPost } from '../types.js';
 
 export function buildSearchMentions(
   query: string,
-  subreddits: string[],
+  channels: string[],
   windowDays: number,
   limit: number,
   posts: RawPost[],
@@ -17,7 +17,7 @@ export function buildSearchMentions(
       id: s.id,
       title: s.title,
       excerpt: s.selftext.slice(0, 280),
-      subreddit: s.subreddit,
+      channel: s.channel,
       score: s.score,
       numComments: s.numComments,
       url: s.url,
@@ -27,5 +27,5 @@ export function buildSearchMentions(
     };
   });
 
-  return { query, subredditsQueried: subreddits, windowDays, count: items.length, items, fetchedAt };
+  return { query, channelsQueried: channels, windowDays, count: items.length, items, fetchedAt };
 }

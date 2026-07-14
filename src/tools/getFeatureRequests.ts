@@ -10,7 +10,7 @@ function hasCue(entry: { p: RawPost; cue: MinedCue | null }): entry is { p: RawP
 
 export function buildFeatureRequests(
   query: string,
-  subreddits: string[],
+  channels: string[],
   windowDays: number,
   limit: number,
   posts: RawPost[],
@@ -30,12 +30,12 @@ export function buildFeatureRequests(
         title: p.title,
         excerpt: cue.snippet,
         cueCategory: cue.cueCategory,
-        subreddit: p.subreddit,
+        channel: p.channel,
         score: p.score,
-        url: `https://www.reddit.com${p.permalink}`,
+        url: `https://news.ycombinator.com${p.permalink}`,
         createdAt: new Date(p.createdUtc * 1000).toISOString(),
       };
     });
 
-  return { query, subredditsQueried: subreddits, windowDays, count: items.length, items, byCategory, fetchedAt };
+  return { query, channelsQueried: channels, windowDays, count: items.length, items, byCategory, fetchedAt };
 }
