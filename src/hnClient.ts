@@ -39,6 +39,31 @@ export function decodeHnText(s: string): string {
     .trim();
 }
 
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Query tokens worth matching on: alphanumeric runs of >=2 chars, lowercased.
+// (Single-char runs like the "c" in "c++" are dropped — they'd match everything.)
+export function queryTokens(query: string): string[] {
+  return (query.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((t) => t.length >= 2);
+}
+
+// The HN Algolia API is typo-tolerant + prefix-matching, so query=prisma also
+// returns "primary", "Primate", "Prism", "Prismata" — non-mentions that inflate
+// mentionVolume and pollute sentiment/themes. This deterministic post-filter keeps
+// a post only when every query token appears as a WHOLE word in its title/body.
+// Pathological queries with no >=2-char token (e.g. "c", "r") are left unfiltered
+// rather than zeroed out.
+export function matchesQuery(post: Pick<RawPost, "title" | "selftext">, query: string): boolean {
+  const tokens = queryTokens(query);
+  if (tokens.length === 0) return true;
+  const haystack = `${post.title} ${post.selftext}`.toLowerCase();
+  return tokens.every((t) =>
+    new RegExp(`(^|[^a-z0-9])${escapeRegExp(t)}([^a-z0-9]|$)`).test(haystack),
+  );
+}
+
 function deriveChannel(tags: unknown): string {
   const t = Array.isArray(tags) ? tags : [];
   if (t.includes("ask_hn")) return "ask_hn";
@@ -110,13 +135,18 @@ export class HnClient {
   }
 
   // Relevance search across the selected channels (stories + comments by default).
+  // Over-fetch a generous page (Algolia ranks by relevance) then apply the
+  // whole-word matchesQuery filter, so typo/prefix false positives are dropped
+  // before they reach sentiment/theme aggregation and mentionVolume.
   async search(query: string, channels: HnChannel[], windowDays: number, limit: number): Promise<RawPost[]> {
-    return normalizeHits(await this.getJson(this.url("search", {
+    const hits = normalizeHits(await this.getJson(this.url("search", {
       query,
       tags: channelTags(channels),
       numericFilters: this.sinceParam(windowDays),
-      hitsPerPage: String(Math.min(limit, 1000)),
+      typoTolerance: "false",
+      hitsPerPage: String(Math.min(1000, Math.max(limit, 200))),
     })));
+    return hits.filter((p) => matchesQuery(p, query));
   }
 
   // Recent stories only (trending is story-level; ranking.ts sorts by engagement).
