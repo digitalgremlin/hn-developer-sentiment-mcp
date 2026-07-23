@@ -1,0 +1,16 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.digitalgremlin/hn-developer-sentiment-mcp",
+  "description": "Deterministic Hacker News developer sentiment, themes & feature requests via MCP. No API key.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/digitalgremlin/hn-developer-sentiment-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://joeslade--hn-developer-sentiment-mcp.apify.actor/mcp"
+    }
+  ]
+}
