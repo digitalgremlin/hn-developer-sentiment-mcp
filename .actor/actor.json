@@ -2,7 +2,7 @@
 	"$schema": "https://apify.com/schemas/v1/actor.ide.json",
 	"actorSpecification": 1,
 	"name": "hn-developer-sentiment-mcp",
-	"title": "Hacker News Developer Sentiment—What Devs Really Think (MCP Server)",
+	"title": "Hacker News Developer Sentiment—What Devs Think (MCP Server)",
 	"description": "Deterministic developer sentiment for any brand, tool, or library from Hacker News—sentiment, mention volume, themes, and feature requests across HN stories and comments, via 4 agent-callable MCP tools. Zero setup: no API key required.",
 	"version": "0.1",
 	"buildTag": "latest",
