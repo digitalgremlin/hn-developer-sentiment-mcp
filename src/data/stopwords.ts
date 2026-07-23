@@ -7,5 +7,6 @@ export const STOPWORDS = new Set([
   "do","does","did","will","wont","them","they","their","there","then","than","been","being","into",
   "onto","over","only","very","out","up","down","off","more","most","some","any","such","same","other",
   "its","his","her","he","she","him","us","me","am","our","your","because","while","after","before",
-  "hn",
+  // HN-structural + contraction noise that leaked as "themes" in live output (0.1.3).
+  "hn","it's","yes","show","ask","dont","doesnt","isnt","that's","don't","doesn't","isn't",
 ]);
